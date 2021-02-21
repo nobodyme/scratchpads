@@ -43,8 +43,11 @@
         let createCommand = commands.registerCommand('scratchpads.newScratchpad', selectFileType);
         context.subscriptions.push(createCommand);
 
-        let removeCommand = commands.registerCommand('scratchpads.removeScratchpads', removeScratchpads);
+        let removeCommand = commands.registerCommand('scratchpads.removeAllScratchpads', removeAllScratchpads);
         context.subscriptions.push(removeCommand);
+        
+        let removeOneCommand = commands.registerCommand('scratchpads.removeScratchpad', removeScratchpad);
+        context.subscriptions.push(removeOneCommand);
 
         let openCommand = commands.registerCommand('scratchpads.openScratchpad', openScratchpad);
         context.subscriptions.push(openCommand);
@@ -346,7 +349,7 @@
      * Remove all scratchpad files (usually when closing VS Code)
      * TODO: Need to fix the error messages due to open tabs of deleted files
      */
-    function removeScratchpads() {
+    function removeAllScratchpads() {
         promptForRemoval()
             .then(() => {
                 return closeTabs();
@@ -357,6 +360,31 @@
             .catch(err => {
                 console.log(err);
             });
+    }
+
+    /**
+     * Remove one scratchpad
+     */
+    function removeScratchpad() {
+        let files = fs.readdirSync(projectScratchpadsPath);
+        
+        if (files.length == 0) {
+            window.showInformationMessage("No scratchpads to delete");
+            return;
+        }
+        
+        window.showQuickPick(files).then((selection) => {
+            if (!selection) {
+                return;
+            }
+            
+            let filePath = path.join(projectScratchpadsPath, selection);
+            fs.unlinkSync(filePath);
+            
+            return selection;
+        }).then(selection => {
+            window.showInformationMessage(`Removed ${selection}`);
+        });
     }
 
     /**
