@@ -82,8 +82,7 @@
             path.join(
                 path.basename(context.globalStoragePath),
                 SCRATCHPADS_FOLDER,
-                projectPathMD5,
-                FILE_NAME_TEMPLATE
+                projectPathMD5
             )
         );
 
@@ -319,10 +318,8 @@
     function createScratchpad(type) {
         let i = undefined;
         let ext = type.ext;
-        const inputOptions = {
-            placeHolder: "Enter a filename"
-        };
-        window.showInputBox(inputOptions).then(fileNameFromUser => {
+        
+        getUserInput("Enter a filename:").then(fileNameFromUser => {
             if (!fileNameFromUser) {
                 fileNameFromUser = FILE_NAME_TEMPLATE;
             }
